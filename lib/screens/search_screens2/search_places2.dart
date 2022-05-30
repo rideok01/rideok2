@@ -5,12 +5,12 @@ import 'package:rideok2/screens/map_key.dart';
 import 'package:rideok2/screens/search_screens2/prediction_tile2.dart';
 
 
-class SearchPlaces extends StatefulWidget {
+class SearchPlaces2 extends StatefulWidget {
   @override
-  State<SearchPlaces> createState() => _SearchPlacesState();
+  State<SearchPlaces2> createState() => _SearchPlaces2State();
 }
 
-class _SearchPlacesState extends State<SearchPlaces> {
+class _SearchPlaces2State extends State<SearchPlaces2> {
    List<PredictedPlaces> placesPredictedList = [];
 
   void findPlaceAutoCompleteSearch(String inputText) async

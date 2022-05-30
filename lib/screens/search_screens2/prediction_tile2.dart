@@ -44,7 +44,7 @@ class PlacePredictionTileDesign2 extends StatelessWidget
       directions.locationLongitude = responseApi["result"]["geometry"]["location"]["lng"];
 
       Provider.of<AppInfo>(context, listen: false).updatePickUpLocationAddress(directions);
-      Navigator.pop(context, "obtainedDropoff");
+      Navigator.pop(context, "obtainedPickUp");
     }
   }
 

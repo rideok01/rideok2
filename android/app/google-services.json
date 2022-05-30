@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "508157084001",
+    "firebase_url": "https://rideok-01-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "rideok-01",
+    "storage_bucket": "rideok-01.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:508157084001:android:99c05eddc019ef36410520",
+        "android_client_info": {
+          "package_name": "com.aayush.rideok"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "508157084001-rvoh77om75o4b50cgi1i616tqim7d5qb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmKbLgfOYhrpQ_gu7ZEKcg4ntx-5bORS0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "508157084001-rvoh77om75o4b50cgi1i616tqim7d5qb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

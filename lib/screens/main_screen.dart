@@ -8,6 +8,7 @@ import 'package:rideok2/informationhandler/app_info.dart';
 import 'package:rideok2/screens/authentication/global.dart';
 import 'package:rideok2/screens/driver/driver_home.dart';
 import 'package:rideok2/screens/search_screens/search_places.dart';
+import 'package:rideok2/screens/search_screens2/search_places2.dart';
 import 'package:rideok2/screens/tabs/homebutton1.dart';
 import 'package:rideok2/screens/tabs/homebutton2.dart';
 import 'package:rideok2/screens/tabs/homebutton3.dart';
@@ -140,32 +141,40 @@ class _MainScreenState extends State<MainScreen> {
                     child: Column(
                       children: [
                         //from origin
-                        Row(
-                          children: [
-                            const Icon(CupertinoIcons.location_solid),
-                            const SizedBox(
-                              width: 12.0,
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  "From",
-                                  style: TextStyle(
-                                      color: Colors.black, fontSize: 12),
-                                ),
-                                Text(
-                                  Provider.of<AppInfo>(context)
-                                              .userPickUpLocation !=
-                                          null
-                                      ? "${(Provider.of<AppInfo>(context).userPickUpLocation!.locationName!).substring(0, 24)}..."
-                                      : "your current address",
-                                  style: const TextStyle(
-                                      color: Colors.black, fontSize: 14),
-                                ),
-                              ],
-                            ),
-                          ],
+                        GestureDetector(
+                          onTap: (() {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (c) => SearchPlaces2()));
+                          }),
+                          child: Row(
+                            children: [
+                              const Icon(CupertinoIcons.location_solid),
+                              const SizedBox(
+                                width: 12.0,
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    "From",
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 12),
+                                  ),
+                                  Text(
+                                    Provider.of<AppInfo>(context)
+                                                .userPickUpLocation !=
+                                            null
+                                        ? (Provider.of<AppInfo>(context).userPickUpLocation!.locationName!)
+                                        : "your current address",
+                                    style: const TextStyle(
+                                        color: Colors.black, fontSize: 14),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
 
                         const SizedBox(height: 10.0),

@@ -10,6 +10,7 @@ import 'package:rideok2/informationhandler/app_info.dart';
 import 'package:rideok2/screens/authentication/global.dart';
 import 'package:rideok2/screens/authentication/process_dialog.dart';
 import 'package:rideok2/screens/search_screens/search_places.dart';
+import 'package:rideok2/screens/search_screens2/search_places2.dart';
 import 'package:rideok2/screens/user_navigation.dart';
 
 class MapPage extends StatefulWidget {
@@ -41,10 +42,7 @@ class _MapPageState extends State<MapPage> {
   Set<Marker> markersSet = {};
   Set<Circle> circlesSet = {};
 
-
-
-  blackThemeGoogleMap()
-  {
+  blackThemeGoogleMap() {
     newGoogleMapController!.setMapStyle('''
                     [
                       {
@@ -210,26 +208,28 @@ class _MapPageState extends State<MapPage> {
                 ''');
   }
 
-
-
-  locateUserPosition() async
-  {
-    Position cPosition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+  locateUserPosition() async {
+    Position cPosition = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
     userCurrentPosition = cPosition;
 
-    LatLng latLngPosition = LatLng(userCurrentPosition!.latitude, userCurrentPosition!.longitude);
+    LatLng latLngPosition =
+        LatLng(userCurrentPosition!.latitude, userCurrentPosition!.longitude);
 
-    CameraPosition cameraPosition = CameraPosition(target: latLngPosition, zoom: 14);
+    CameraPosition cameraPosition =
+        CameraPosition(target: latLngPosition, zoom: 14);
 
-    newGoogleMapController!.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+    newGoogleMapController!
+        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
 
-    String humanReadableAddress = await AssistantMethods.searchAddressForGeographicCoOrdinates(userCurrentPosition!, context);
+    String humanReadableAddress =
+        await AssistantMethods.searchAddressForGeographicCoOrdinates(
+            userCurrentPosition!, context);
     print("this is your address = " + humanReadableAddress);
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     return Scaffold(
       drawer: UserNavigation(
         namee: userModelCurrentInfo!.name,
@@ -245,8 +245,7 @@ class _MapPageState extends State<MapPage> {
             zoomControlsEnabled: true,
             initialCameraPosition: _kGooglePlex,
             polylines: polyLineSet,
-            onMapCreated: (GoogleMapController controller)
-            {
+            onMapCreated: (GoogleMapController controller) {
               _controllerGoogleMap.complete(controller);
               newGoogleMapController = controller;
 
@@ -268,11 +267,8 @@ class _MapPageState extends State<MapPage> {
                       Icons.menu,
                       color: Colors.black,
                     ),
-                  )
-                  )
-                  ),
-
-                  Positioned(
+                  ))),
+          Positioned(
             top: 513,
             width: 390,
             child: Center(
@@ -280,21 +276,22 @@ class _MapPageState extends State<MapPage> {
                 width: 350,
                 height: 214,
                 decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(22),
-                    topRight: Radius.circular(22),
-                    bottomLeft: Radius.circular(22),
-                    bottomRight: Radius.circular(22),
-                  ),
-                  gradient: LinearGradient(
-                      begin: Alignment(0.9797160029411316, 0.03849898651242256),
-                      end: Alignment(-0.03849898651242256, 0.04261964559555054),
-                      // ignore: prefer_const_literals_to_create_immutables
-                      colors: [
-                        Color.fromRGBO(0, 209, 255, 0.25999999046325684),
-                        Color.fromRGBO(117, 0, 173, 0.3499999940395355)
-                      ]),
-                ),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(22),
+                      topRight: Radius.circular(22),
+                      bottomLeft: Radius.circular(22),
+                      bottomRight: Radius.circular(22),
+                    ),
+                    color: Colors.white
+                    // gradient: LinearGradient(
+                    //     begin: Alignment(0.9797160029411316, 0.03849898651242256),
+                    //     end: Alignment(-0.03849898651242256, 0.04261964559555054),
+                    //     // ignore: prefer_const_literals_to_create_immutables
+                    //     colors: [
+                    //       Color.fromRGBO(0, 209, 255, 0.25999999046325684),
+                    //       Color.fromRGBO(117, 0, 173, 0.3499999940395355)
+                    //     ]),
+                    ),
                 child: Column(children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(
@@ -302,55 +299,13 @@ class _MapPageState extends State<MapPage> {
                     child: Column(
                       children: [
                         //from origin
-                        Row(
-                          children: [
-                            const Icon(CupertinoIcons.location_solid),
-                            const SizedBox(
-                              width: 12.0,
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  "From",
-                                  style: TextStyle(
-                                      color: Colors.black, fontSize: 12),
-                                ),
-                                Text(
-                                  Provider.of<AppInfo>(context)
-                                              .userPickUpLocation !=
-                                          null
-                                      ? "${(Provider.of<AppInfo>(context).userPickUpLocation!.locationName!).substring(0, 24)}..."
-                                      : "your current address",
-                                  style: const TextStyle(
-                                      color: Colors.black, fontSize: 14),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 10.0),
-
-                        const Divider(
-                          height: 1,
-                          thickness: 1,
-                          color: Colors.grey,
-                        ),
-
-                        const SizedBox(height: 16.0),
-
-                        //to destination
                         GestureDetector(
-                          onTap:() async {
-                            var responseFromSearchScreen = await Navigator.push(context, MaterialPageRoute(builder: (c)=> SearchPlaces()));
-
-                          if(responseFromSearchScreen == "obtainedDropoff")
-                          {
-                            //draw routes - draw polyline
-                            await drawPolyLineFromOriginToDestination();
-                          }
-                          },
+                          onTap: (() {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (c) => SearchPlaces2()));
+                          }),
                           child: Row(
                             children: [
                               const Icon(CupertinoIcons.location_solid),
@@ -361,14 +316,18 @@ class _MapPageState extends State<MapPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const Text(
-                                    "To",
+                                    "From",
                                     style: TextStyle(
                                         color: Colors.black, fontSize: 12),
                                   ),
                                   Text(
-                                    Provider.of<AppInfo>(context).userDropOffLocation != null 
-                                      ? Provider.of<AppInfo>(context).userDropOffLocation!.locationName!
-                                      : "Where to go?",
+                                    Provider.of<AppInfo>(context)
+                                                .userPickUpLocation !=
+                                            null
+                                        ? (Provider.of<AppInfo>(context)
+                                            .userPickUpLocation!
+                                            .locationName!)
+                                        : "your current address",
                                     style: const TextStyle(
                                         color: Colors.black, fontSize: 14),
                                   ),
@@ -388,16 +347,93 @@ class _MapPageState extends State<MapPage> {
 
                         const SizedBox(height: 16.0),
 
-                        ElevatedButton(
-                          child: const Text(
-                            "Request a Ride",
+                        //to destination
+                        GestureDetector(
+                          onTap: () async {
+                            var responseFromSearchScreen = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (c) => SearchPlaces()));
+
+                            if (responseFromSearchScreen == "obtainedDropoff") {
+                              //draw routes - draw polyline
+                              await drawPolyLineFromOriginToDestination();
+                            }
+                          },
+                          child: Row(
+                            children: [
+                              const Icon(CupertinoIcons.location_solid),
+                              const SizedBox(
+                                width: 12.0,
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    "To",
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 12),
+                                  ),
+                                  Text(
+                                    Provider.of<AppInfo>(context)
+                                                .userDropOffLocation !=
+                                            null
+                                        ? Provider.of<AppInfo>(context)
+                                            .userDropOffLocation!
+                                            .locationName!
+                                        : "Where to go?",
+                                    style: const TextStyle(
+                                        color: Colors.black, fontSize: 14),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                              primary: Color.fromARGB(255, 146, 182, 244),
-                              textStyle: const TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold)),
                         ),
+
+                        const SizedBox(height: 10.0),
+
+                        const Divider(
+                          height: 1,
+                          thickness: 1,
+                          color: Colors.grey,
+                        ),
+
+                        const SizedBox(height: 16.0),
+
+                        Row(
+                          children: [
+                            ElevatedButton(
+                              onPressed: () async {
+                                try {
+                                  await drawPolyLineFromOriginToDestination();
+                                } catch (e) {
+                                  debugPrint(e.toString());
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  primary: Color.fromARGB(255, 146, 182, 244),
+                                  textStyle: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold)),
+                              child: const Text(
+                                "Look Directions",
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            ElevatedButton(
+                              onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                  primary: Color.fromARGB(255, 146, 182, 244),
+                                  textStyle: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold)),
+                              child: const Text(
+                                "Request a Ride",
+                              ),
+                            ),
+                          ],
+                        )
                       ],
                     ),
                   ),
@@ -405,26 +441,32 @@ class _MapPageState extends State<MapPage> {
               ),
             ),
           ),
-
         ],
       ),
     );
   }
 
-  Future<void> drawPolyLineFromOriginToDestination() async
-  {
-    var originPosition = Provider.of<AppInfo>(context, listen: false).userPickUpLocation;
-    var destinationPosition = Provider.of<AppInfo>(context, listen: false).userDropOffLocation;
+  Future<void> drawPolyLineFromOriginToDestination() async {
+    var originPosition =
+        Provider.of<AppInfo>(context, listen: false).userPickUpLocation;
+    var destinationPosition =
+        Provider.of<AppInfo>(context, listen: false).userDropOffLocation;
 
-    var originLatLng = LatLng(originPosition!.locationLatitude!, originPosition.locationLongitude!);
-    var destinationLatLng = LatLng(destinationPosition!.locationLatitude!, destinationPosition.locationLongitude!);
+    var originLatLng = LatLng(
+        originPosition!.locationLatitude!, originPosition.locationLongitude!);
+    var destinationLatLng = LatLng(destinationPosition!.locationLatitude!,
+        destinationPosition.locationLongitude!);
 
     showDialog(
-        context: context,
-        builder: (BuildContext context) => ProcessDialog(message: "Please wait...",),
+      context: context,
+      builder: (BuildContext context) => ProcessDialog(
+        message: "Please wait...",
+      ),
     );
 
-    var directionDetailsInfo = await AssistantMethods.obtainOriginToDestinationDirectionDetails(originLatLng,destinationLatLng);
+    var directionDetailsInfo =
+        await AssistantMethods.obtainOriginToDestinationDirectionDetails(
+            originLatLng, destinationLatLng);
 
     Navigator.pop(context);
 
@@ -432,15 +474,15 @@ class _MapPageState extends State<MapPage> {
     print(directionDetailsInfo!.e_points);
 
     PolylinePoints pPoints = PolylinePoints();
-    List<PointLatLng> decodedPolyLinePointsResultList = pPoints.decodePolyline(directionDetailsInfo.e_points!);
+    List<PointLatLng> decodedPolyLinePointsResultList =
+        pPoints.decodePolyline(directionDetailsInfo.e_points!);
 
     pLineCoOrdinatesList.clear();
 
-    if(decodedPolyLinePointsResultList.isNotEmpty)
-    {
-      decodedPolyLinePointsResultList.forEach((PointLatLng pointLatLng)
-      {
-        pLineCoOrdinatesList.add(LatLng(pointLatLng.latitude, pointLatLng.longitude));
+    if (decodedPolyLinePointsResultList.isNotEmpty) {
+      decodedPolyLinePointsResultList.forEach((PointLatLng pointLatLng) {
+        pLineCoOrdinatesList
+            .add(LatLng(pointLatLng.latitude, pointLatLng.longitude));
       });
     }
 
@@ -461,41 +503,40 @@ class _MapPageState extends State<MapPage> {
     });
 
     LatLngBounds boundsLatLng;
-    if(originLatLng.latitude > destinationLatLng.latitude && originLatLng.longitude > destinationLatLng.longitude)
-    {
-      boundsLatLng = LatLngBounds(southwest: destinationLatLng, northeast: originLatLng);
-    }
-    else if(originLatLng.longitude > destinationLatLng.longitude)
-    {
+    if (originLatLng.latitude > destinationLatLng.latitude &&
+        originLatLng.longitude > destinationLatLng.longitude) {
+      boundsLatLng =
+          LatLngBounds(southwest: destinationLatLng, northeast: originLatLng);
+    } else if (originLatLng.longitude > destinationLatLng.longitude) {
       boundsLatLng = LatLngBounds(
-          southwest: LatLng(originLatLng.latitude, destinationLatLng.longitude),
-          northeast: LatLng(destinationLatLng.latitude, originLatLng.longitude),
+        southwest: LatLng(originLatLng.latitude, destinationLatLng.longitude),
+        northeast: LatLng(destinationLatLng.latitude, originLatLng.longitude),
       );
-    }
-    else if(originLatLng.latitude > destinationLatLng.latitude)
-    {
+    } else if (originLatLng.latitude > destinationLatLng.latitude) {
       boundsLatLng = LatLngBounds(
         southwest: LatLng(destinationLatLng.latitude, originLatLng.longitude),
         northeast: LatLng(originLatLng.latitude, destinationLatLng.longitude),
       );
+    } else {
+      boundsLatLng =
+          LatLngBounds(southwest: originLatLng, northeast: destinationLatLng);
     }
-    else
-    {
-      boundsLatLng = LatLngBounds(southwest: originLatLng, northeast: destinationLatLng);
-    }
-    
-    newGoogleMapController!.animateCamera(CameraUpdate.newLatLngBounds(boundsLatLng, 65));
+
+    newGoogleMapController!
+        .animateCamera(CameraUpdate.newLatLngBounds(boundsLatLng, 65));
 
     Marker originMarker = Marker(
       markerId: const MarkerId("originID"),
-      infoWindow: InfoWindow(title: originPosition.locationName, snippet: "Origin"),
+      infoWindow:
+          InfoWindow(title: originPosition.locationName, snippet: "Origin"),
       position: originLatLng,
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow),
     );
 
     Marker destinationMarker = Marker(
       markerId: const MarkerId("destinationID"),
-      infoWindow: InfoWindow(title: destinationPosition.locationName, snippet: "Destination"),
+      infoWindow: InfoWindow(
+          title: destinationPosition.locationName, snippet: "Destination"),
       position: destinationLatLng,
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
     );
@@ -528,5 +569,4 @@ class _MapPageState extends State<MapPage> {
       circlesSet.add(destinationCircle);
     });
   }
-
 }
