@@ -6,27 +6,19 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_place/google_place.dart';
-import 'package:provider/provider.dart';
 import 'package:rideok2/assistant_methods.dart';
-import 'package:rideok2/informationhandler/app_info.dart';
 import 'package:rideok2/models/destination_points.dart';
-import 'package:rideok2/models/directions.dart';
-import 'package:rideok2/models/directions_detail.dart';
 import 'package:rideok2/models/directions_new.dart';
 import 'package:rideok2/screens/authentication/global.dart';
 import 'package:rideok2/screens/map_key.dart';
-import 'package:rideok2/screens/navigation_sidebar.dart';
-import 'package:rideok2/screens/search_screens/search_places.dart';
-import 'package:rideok2/screens/search_screens2/search_places2.dart';
-import 'package:rideok2/screens/tabs/driverswitch.dart';
-import 'package:rideok2/screens/tabs/homebutton1.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class OfferRide extends StatefulWidget {
+  const OfferRide({Key? key}) : super(key: key);
+
   @override
   State<OfferRide> createState() => _OfferRideState();
 }
@@ -47,6 +39,7 @@ class _OfferRideState extends State<OfferRide> {
   DetailsResult? endPosition;
 
   LatLng? endPoint;
+  LatLng? midPoint;
 
   String? dropDownValue;
   final DestinationPoints location1 = DestinationPoints(
@@ -71,26 +64,6 @@ class _OfferRideState extends State<OfferRide> {
     zoom: 14.4746,
   );
 
-  void _setMapFitToTour(Set<Polyline> p) {
-    double minLat = p.first.points.first.latitude;
-    double minLong = p.first.points.first.longitude;
-    double maxLat = p.first.points.first.latitude;
-    double maxLong = p.first.points.first.longitude;
-    for (var poly in p) {
-      for (var point in poly.points) {
-        if (point.latitude < minLat) minLat = point.latitude;
-        if (point.latitude > maxLat) maxLat = point.latitude;
-        if (point.longitude < minLong) minLong = point.longitude;
-        if (point.longitude > maxLong) maxLong = point.longitude;
-      }
-    }
-    _googleMapController!.moveCamera(CameraUpdate.newLatLngBounds(
-        LatLngBounds(
-            southwest: LatLng(minLat, minLong),
-            northeast: LatLng(maxLat, maxLong)),
-        20));
-  }
-
   drawPolyLine2(DetailsResult a, LatLng b) async {
     setState(() {
       _origin = Marker(
@@ -112,13 +85,17 @@ class _OfferRideState extends State<OfferRide> {
         origin: LatLng(a.geometry!.location!.lat!, a.geometry!.location!.lng!),
         destination: b))!;
 
+    midPoint = LatLng(
+        _info!.polylinePoints[(_info!.polylinePoints.length * 0.5).toInt()]
+            .latitude,
+        _info!.polylinePoints[(_info!.polylinePoints.length * 0.5).toInt()]
+            .longitude);
+
     _googleMapController!.moveCamera(CameraUpdate.newLatLngBounds(
         LatLngBounds(
-          southwest: LatLng(a.geometry!.location!.lat!, a.geometry!.location!.lng!), 
-          northeast: b
-        ), 20.0
-      )
-    );
+            southwest: b,
+            northeast: LatLng(a.geometry!.location!.lat!, a.geometry!.location!.lng!)),
+        20.0));
 
     setState(() {
       print("New Info" + _info!.polylinePoints.toString());
@@ -162,8 +139,6 @@ class _OfferRideState extends State<OfferRide> {
             .toList(),
       );
     }
-
-    
 
     setState(() {
       print("New Info" + _info!.polylinePoints.toString());
@@ -234,7 +209,6 @@ class _OfferRideState extends State<OfferRide> {
 
             //for black theme google map
             blackThemeGoogleMap();
-            //locateUserPosition();
           },
         ),
         Align(
@@ -261,6 +235,8 @@ class _OfferRideState extends State<OfferRide> {
                     "start_location": startPosition!.name,
                     "start_lat": startPosition!.geometry!.location!.lat,
                     "start_lng": startPosition!.geometry!.location!.lng,
+                    "mid_lat": midPoint!.latitude,
+                    "mid_long": midPoint!.longitude,
                     "end_location": 'Amity University Noida',
                     "end_lat": location1.lat,
                     "end_lng": location1.lng
@@ -271,6 +247,8 @@ class _OfferRideState extends State<OfferRide> {
                     "start_location": startPosition!.name,
                     "start_lat": startPosition!.geometry!.location!.lat,
                     "start_lng": startPosition!.geometry!.location!.lng,
+                    "mid_lat": midPoint!.latitude,
+                    "mid_long": midPoint!.longitude,
                     "end_location": 'HCL Office Indirapuram',
                     "end_lat": location2.lat,
                     "end_lng": location2.lng
@@ -333,6 +311,8 @@ class _OfferRideState extends State<OfferRide> {
                   });
                 },
               ).pOnly(left: 12, right: 12, top: 12),
+
+              // IF WE WANT ANOTHER TEXT FIELD OTHER THAN DROPDOWN
               // TextField(
               //   controller: _endingLocationController,
               //   focusNode: endFocusNode,
