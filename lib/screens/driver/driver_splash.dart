@@ -15,25 +15,24 @@ class DriverSplash extends StatefulWidget {
 
 class _DriverSplashState extends State<DriverSplash> {
   startTimer() {
-    Timer(const Duration(seconds: 1), () async { 
-     if(currentFirebaseUser != null)
-    {
-      DatabaseReference driversRef = FirebaseDatabase.instance.ref().child("drivers");
-      driversRef.child(currentFirebaseUser!.uid).once().then((driverKey)
-      {
-        final snap = driverKey.snapshot;
-        if(snap.value != null)
-        {
-          Fluttertoast.showToast(msg: "Login Successful.");
-          Navigator.push(context, MaterialPageRoute(builder: (c)=> DriverHome()));
-        }
-        else
-        {
-          Fluttertoast.showToast(msg: "Please enter your car details");
-          Navigator.push(context, MaterialPageRoute(builder: (c)=> CarInfo()));
-        }
-      });
-    }});
+    Timer(const Duration(seconds: 1), () async {
+      if (currentFirebaseUser != null) {
+        DatabaseReference driversRef =
+            FirebaseDatabase.instance.ref().child("drivers");
+        driversRef.child(currentFirebaseUser!.uid).once().then((driverKey) {
+          final snap = driverKey.snapshot;
+          if (snap.value != null) {
+            Fluttertoast.showToast(msg: "Login Successful.");
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (c) => DriverHome()));
+          } else {
+            Fluttertoast.showToast(msg: "Please enter your car details");
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (c) => CarInfo()));
+          }
+        });
+      }
+    });
   }
 
   @override
@@ -51,17 +50,21 @@ class _DriverSplashState extends State<DriverSplash> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Image.asset('assets/images/logo.png', width: 150, height: 150,),
-              const SizedBox(height: 10,),
+              Image.asset(
+                'assets/images/logo.png',
+                width: 150,
+                height: 150,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
               const Text(
                 'RideOK',
                 style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold
-                ),        
+                    fontSize: 20,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold),
               )
-    
             ],
           ),
         ),
