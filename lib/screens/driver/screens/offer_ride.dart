@@ -52,7 +52,7 @@ class _OfferRideState extends State<OfferRide> {
   final DestinationPoints location1 = DestinationPoints(
       'Amity University Noida', 28.54412733486746, 77.33307631780283);
   final DestinationPoints location2 = DestinationPoints(
-      'HCL Office Noida', 28.537556070138418, 77.34292653194981);
+      'HCL Office Indirapuram', 28.608585486138754, 77.36293993959215);
 
   Marker? _origin;
   Marker? _destination;
@@ -61,6 +61,7 @@ class _OfferRideState extends State<OfferRide> {
   late FocusNode endFocusNode;
 
   Map? locationInfo;
+  Polyline? polyLine;
 
   List<AutocompletePrediction> predictions = [];
   Timer? debounce;
@@ -69,6 +70,26 @@ class _OfferRideState extends State<OfferRide> {
     target: LatLng(28.6483451, 77.3797245),
     zoom: 14.4746,
   );
+
+  void _setMapFitToTour(Set<Polyline> p) {
+    double minLat = p.first.points.first.latitude;
+    double minLong = p.first.points.first.longitude;
+    double maxLat = p.first.points.first.latitude;
+    double maxLong = p.first.points.first.longitude;
+    for (var poly in p) {
+      for (var point in poly.points) {
+        if (point.latitude < minLat) minLat = point.latitude;
+        if (point.latitude > maxLat) maxLat = point.latitude;
+        if (point.longitude < minLong) minLong = point.longitude;
+        if (point.longitude > maxLong) maxLong = point.longitude;
+      }
+    }
+    _googleMapController!.moveCamera(CameraUpdate.newLatLngBounds(
+        LatLngBounds(
+            southwest: LatLng(minLat, minLong),
+            northeast: LatLng(maxLat, maxLong)),
+        20));
+  }
 
   drawPolyLine2(DetailsResult a, LatLng b) async {
     setState(() {
@@ -90,6 +111,14 @@ class _OfferRideState extends State<OfferRide> {
     _info = (await AssistantMethods.getDirections(
         origin: LatLng(a.geometry!.location!.lat!, a.geometry!.location!.lng!),
         destination: b))!;
+
+    _googleMapController!.moveCamera(CameraUpdate.newLatLngBounds(
+        LatLngBounds(
+          southwest: LatLng(a.geometry!.location!.lat!, a.geometry!.location!.lng!), 
+          northeast: b
+        ), 20.0
+      )
+    );
 
     setState(() {
       print("New Info" + _info!.polylinePoints.toString());
@@ -122,6 +151,19 @@ class _OfferRideState extends State<OfferRide> {
         origin: LatLng(a.geometry!.location!.lat!, a.geometry!.location!.lng!),
         destination:
             LatLng(b.geometry!.location!.lat!, b.geometry!.location!.lng!)))!;
+
+    if (_info != null) {
+      polyLine = Polyline(
+        polylineId: const PolylineId('Polyline'),
+        color: Colors.red,
+        width: 3,
+        points: _info!.polylinePoints
+            .map((e) => LatLng(e.latitude, e.longitude))
+            .toList(),
+      );
+    }
+
+    
 
     setState(() {
       print("New Info" + _info!.polylinePoints.toString());
@@ -229,7 +271,7 @@ class _OfferRideState extends State<OfferRide> {
                     "start_location": startPosition!.name,
                     "start_lat": startPosition!.geometry!.location!.lat,
                     "start_lng": startPosition!.geometry!.location!.lng,
-                    "end_location": 'HCL Office Noida',
+                    "end_location": 'HCL Office Indirapuram',
                     "end_lat": location2.lat,
                     "end_lng": location2.lng
                   };
@@ -239,13 +281,17 @@ class _OfferRideState extends State<OfferRide> {
 
                 DatabaseReference locationref =
                     FirebaseDatabase.instance.ref().child(dropDownValue!);
-                await locationref.child('rides').child(currentFirebaseUser!.uid).set(locationInfo);
+                await locationref
+                    .child('rides')
+                    .child(currentFirebaseUser!.uid)
+                    .set(locationInfo);
 
                 setState(() {
                   Fluttertoast.showToast(msg: "Your Ride has been added.");
                 });
               } else {
-                Fluttertoast.showToast(msg: "Please enter Start and Dropoff location");
+                Fluttertoast.showToast(
+                    msg: "Please enter Start and Dropoff location");
               }
             },
           ).pOnly(bottom: 20),
@@ -344,7 +390,7 @@ class _OfferRideState extends State<OfferRide> {
                               case 'Amity University Noida':
                                 endPoint = LatLng(location1.lat, location1.lng);
                                 break;
-                              case 'HCL Office Noida':
+                              case 'HCL Office Indirapuram':
                                 endPoint = LatLng(location2.lat, location2.lng);
                                 break;
                               default:
