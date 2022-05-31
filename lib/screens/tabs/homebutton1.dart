@@ -13,7 +13,7 @@ class _HomeButton1State extends State<HomeButton1> {
   @override
   Widget build(BuildContext context) {
 
-   Offset distance = isPressed ? Offset(10, 10) : Offset(5, 5);
+   Offset distance = isPressed ? const Offset(10, 10) : const Offset(5, 5);
    double blur = isPressed ? 5.0 : 10.0;
 
     return GestureDetector(
@@ -28,12 +28,12 @@ class _HomeButton1State extends State<HomeButton1> {
       decoration: BoxDecoration(
             
             borderRadius: BorderRadius.circular(10),
-            color: Color.fromRGBO(242, 242, 242, 1),
+            color: const Color.fromRGBO(242, 242, 242, 1),
             boxShadow: [
               BoxShadow(
                 blurRadius: blur,
                 offset: distance,
-                color: Color(0xFFA7A9AF),
+                color: const Color(0xFFA7A9AF),
                 inset: isPressed,
               ),
               BoxShadow(
@@ -45,7 +45,7 @@ class _HomeButton1State extends State<HomeButton1> {
               
             ]
             ),
-      child:Text(
+      child: const Text(
               '''Available''',
               overflow: TextOverflow.visible,
               textAlign: TextAlign.center,

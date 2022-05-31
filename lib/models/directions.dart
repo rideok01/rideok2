@@ -13,4 +13,5 @@ class Directions
     this.locationLatitude,
     this.locationLongitude,
   });
+
 }

@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -54,15 +56,15 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget build(BuildContext context) {
-    Offset distance = isPressed ? Offset(10, 10) : Offset(5, 5);
+    Offset distance = isPressed ? const Offset(10, 10) : const Offset(5, 5);
     double blur = isPressed ? 5.0 : 10.0;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(153, 255, 255, 255),
+        backgroundColor: const Color.fromARGB(153, 255, 255, 255),
         automaticallyImplyLeading: false,
         title: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 07),
+          padding: const EdgeInsets.symmetric(horizontal: 07),
           child: Builder(
             builder: (context) => IconButton(
               icon: SvgPicture.asset(
@@ -95,13 +97,13 @@ class _MainScreenState extends State<MainScreen> {
             height: 190.65196228027344,
             child: Image.asset('assets/images/homepageimg.png'),
           ),
-          Positioned(
+          const Positioned(
               left: 17,
               top: 65,
               width: 145,
               height: 176,
               child: Text(
-                'Car Pool  ' + 'With            ' + 'the Knowns',
+                'Car Pool  ' 'With            ' 'the Knowns',
                 textAlign: TextAlign.left,
                 style: TextStyle(
                     color: Color.fromRGBO(0, 0, 0, 1),
@@ -230,14 +232,14 @@ class _MainScreenState extends State<MainScreen> {
                         const SizedBox(height: 16.0),
 
                         ElevatedButton(
+                          onPressed: () {},
+                          style: ElevatedButton.styleFrom(
+                              primary: const Color.fromARGB(255, 146, 182, 244),
+                              textStyle: const TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold)),
                           child: const Text(
                             "Request a Ride",
                           ),
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                              primary: Color.fromARGB(255, 146, 182, 244),
-                              textStyle: const TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold)),
                         ),
                       ],
                     ),
@@ -252,11 +254,11 @@ class _MainScreenState extends State<MainScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   HomeButton1(),
-                  SizedBox(
+                  const SizedBox(
                     width: 22,
                   ),
                   HomeButton2(),
-                  SizedBox(
+                  const SizedBox(
                     width: 22,
                   ),
                   HomeButton3(),

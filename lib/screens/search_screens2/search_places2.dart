@@ -78,6 +78,7 @@ class _SearchPlaces2State extends State<SearchPlaces2> {
                         onTap: ()
                         {
                           Navigator.pop(context);
+                          FocusManager.instance.primaryFocus?.unfocus();
                         },
                         child: const Icon(
                           Icons.arrow_back,
@@ -142,11 +143,11 @@ class _SearchPlaces2State extends State<SearchPlaces2> {
           ),
 
           //display place predictions result
-          (placesPredictedList.length > 0)
+          (placesPredictedList.isNotEmpty)
               ? Expanded(
-                  child: ListView.separated(
+                  child: ListView.separated(  
                     itemCount: placesPredictedList.length,
-                    physics: ClampingScrollPhysics(),
+                    physics: const ClampingScrollPhysics(),
                     itemBuilder: (context, index)
                     {
                       return PlacePredictionTileDesign2(

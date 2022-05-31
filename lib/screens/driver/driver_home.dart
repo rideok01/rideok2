@@ -1,24 +1,20 @@
-import 'package:flutter/material.dart'  hide BoxDecoration, BoxShadow;
+import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
+import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:rideok2/screens/authentication/global.dart';
+import 'package:rideok2/screens/driver/screens/offer_ride.dart';
 import 'package:rideok2/screens/navigation_sidebar.dart';
 import 'package:rideok2/screens/tabs/driverswitch.dart';
 import 'package:rideok2/screens/tabs/homebutton1.dart';
 
-
 class DriverHome extends StatefulWidget {
   @override
   State<DriverHome> createState() => _DriverHomeState();
- 
 }
 
 class _DriverHomeState extends State<DriverHome> {
-   
-  
   @override
   Widget build(BuildContext context) {
-   
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -44,7 +40,21 @@ class _DriverHomeState extends State<DriverHome> {
         namee: userModelCurrentInfo!.name,
         emaill: userModelCurrentInfo!.email,
       ),
-      body: DriverSwitch(),
+      body: Center(
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            primary: Colors.white
+          ),  
+          child: const Text(
+            "Offer a Ride",
+            style: TextStyle(color: Colors.black),
+          ),
+          onPressed: () {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => OfferRide()));
+          },
+        ),
+      ),
     );
   }
 }

@@ -3,15 +3,12 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rideok2/screens/authentication/global.dart';
-import 'package:rideok2/screens/authentication/login/login_screen.dart';
 import 'package:rideok2/screens/authentication/signup/car_info.dart';
-import 'package:rideok2/screens/authentication/signup/signup.dart';
 import 'package:rideok2/screens/driver/driver_home.dart';
-import 'package:rideok2/screens/main_screen.dart';
-import 'package:rideok2/screens/navigation_sidebar.dart';
-import 'package:rideok2/screens/tabs/ratings.dart';
 
 class DriverSplash extends StatefulWidget {
+  const DriverSplash({Key? key}) : super(key: key);
+
   @override
   State<DriverSplash> createState() => _DriverSplashState();
 }

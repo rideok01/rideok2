@@ -48,6 +48,8 @@ dependencies:
   velocity_x: ^3.5.1
   font_awesome_flutter: ^10.1.0
   eva_icons_flutter: ^3.1.0
+  google_place: ^0.4.7
+  dio: ^4.0.6
 
 dev_dependencies:
   flutter_test:
