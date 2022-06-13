@@ -82,7 +82,7 @@ class AssistantMethods {
     return directionDetailsInfo;
   }
 
- static Future<Directions_New?> getDirections({
+  static Future<Directions_New?> getDirections({
     required LatLng origin,
     required LatLng destination,
   }) async {
@@ -98,5 +98,62 @@ class AssistantMethods {
     } else {
       return null;
     }
+  }
+
+  static Future<List> addLocations(LatLng pickUp, LatLng drop) async {
+    List drivers = [];
+    List userPoints = [];
+    List availableDrivers = [];
+    Directions_New? points;
+
+    DatabaseReference testref = FirebaseDatabase.instance
+        .ref()
+        .child('Amity University Noida')
+        .child('rides');
+
+    await testref.once().then((value) {
+      Map? b = value.snapshot.value as Map?;
+      b!.forEach((index, data) => drivers.add({'key': index, ...data}));
+    });
+
+    points =
+        await AssistantMethods.getDirections(origin: pickUp, destination: drop);
+
+    userPoints = points!.polylinePoints
+        .map((e) => LatLng(e.latitude, e.longitude))
+        .toList();
+
+    /// i is for looping through userPoints
+    /// j is for looping through all the drivers going to Amity
+    for (var i = 0; i < 3; i++) {
+      for (var j = 0; j < drivers.length; j++) {
+        if (Geolocator.distanceBetween(
+                    userPoints[userPoints.length * i ~/ 10].latitude,
+                    userPoints[0].longitude,
+                    drivers[j]['start_lat'],
+                    drivers[j]['start_lng']) <
+                50000 ||
+            Geolocator.distanceBetween(
+                    userPoints[userPoints.length * i ~/ 10].latitude,
+                    userPoints[0].longitude,
+                    drivers[j]['mid_lat'],
+                    drivers[j]['mid_long']) <
+                50000 ||
+            Geolocator.distanceBetween(
+                    userPoints[userPoints.length * i ~/ 10].latitude,
+                    userPoints[0].longitude,
+                    drivers[j]['end_lat'],
+                    drivers[j]['end_lng']) <
+                50000) {
+          print('Drivers are available');
+          availableDrivers.add(drivers[j]['key']);
+        } else {
+          print('Drivers are not available');
+        }
+      }
+    }
+    availableDrivers = availableDrivers.toSet().toList();
+    print(availableDrivers);
+    return availableDrivers;
   }
 }

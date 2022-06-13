@@ -1,12 +1,17 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_place/google_place.dart';
 import 'package:provider/provider.dart';
 import 'package:rideok2/assistant_methods.dart';
 import 'package:rideok2/informationhandler/app_info.dart';
+import 'package:rideok2/models/destination_points.dart';
 import 'package:rideok2/screens/authentication/global.dart';
 import 'package:rideok2/screens/driver/driver_home.dart';
 import 'package:rideok2/screens/search_screens/search_places.dart';
@@ -16,6 +21,7 @@ import 'package:rideok2/screens/tabs/homebutton2.dart';
 import 'package:rideok2/screens/tabs/homebutton3.dart';
 import 'package:rideok2/screens/tabs/map.dart';
 import 'package:rideok2/screens/user_navigation.dart';
+import 'package:velocity_x/velocity_x.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -29,6 +35,19 @@ class _MainScreenState extends State<MainScreen> {
   Position? userCurrentPosition;
   var geoLocator = Geolocator();
 
+  List availableDrivers = [];
+  late LatLng pickUp;
+  late LatLng drop;
+  bool _isLoading = false;
+
+  DetailsResult? startPosition;
+  DetailsResult? endPosition;
+  String? dropDownValue;
+  final DestinationPoints location1 = DestinationPoints(
+      'Amity University Noida', 28.54412733486746, 77.33307631780283);
+  final DestinationPoints location2 = DestinationPoints(
+      'HCL Office Indirapuram', 28.608585486138754, 77.36293993959215);
+
   checkIfLocationPermissionAllowed() async {
     _locationPermission = await Geolocator.requestPermission();
 
@@ -37,10 +56,41 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
+  Future<List> availableDriverFunc() async {
+    _isLoading = true;
+    setState(() {});
+
+    List list = [];
+    pickUp = LatLng(
+        Provider.of<AppInfo>(context, listen: false)
+            .userPickUpLocation!
+            .locationLatitude!,
+        Provider.of<AppInfo>(context, listen: false)
+            .userPickUpLocation!
+            .locationLongitude!);
+
+    switch (dropDownValue) {
+      case 'Amity University Noida':
+        drop = LatLng(location1.lat, location1.lng);
+        break;
+      case 'HCL Office Indirapuram':
+        drop = LatLng(location2.lat, location2.lng);
+        break;
+      default:
+        drop = LatLng(location1.lat, location1.lng);
+        break;
+    }
+
+    list = await AssistantMethods.addLocations(pickUp, drop);
+    _isLoading = false;
+    setState(() {});
+    return list;
+  }
+
   locateMainScreenUser() async {
     Position cPosition = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-        userCurrentPosition = cPosition;
+    userCurrentPosition = cPosition;
     String humanReadableAddress =
         await AssistantMethods.searchAddressForGeographicCoOrdinates(
             userCurrentPosition!, context);
@@ -117,151 +167,175 @@ class _MainScreenState extends State<MainScreen> {
           Positioned(
             top: 213,
             child: Center(
-              child: Container(
-                width: 350,
-                height: 214,
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(22),
-                    topRight: Radius.circular(22),
-                    bottomLeft: Radius.circular(22),
-                    bottomRight: Radius.circular(22),
-                  ),
-                  gradient: LinearGradient(
-                      begin: Alignment(0.9797160029411316, 0.03849898651242256),
-                      end: Alignment(-0.03849898651242256, 0.04261964559555054),
-                      // ignore: prefer_const_literals_to_create_immutables
-                      colors: [
-                        Color.fromRGBO(0, 209, 255, 0.25999999046325684),
-                        Color.fromRGBO(117, 0, 173, 0.3499999940395355)
-                      ]),
-                ),
-                child: Column(children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 18),
-                    child: Column(
-                      children: [
-                        //from origin
-                        GestureDetector(
-                          onTap: (() {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (c) => SearchPlaces2()));
-                          }),
-                          child: Row(
-                            children: [
-                              const Icon(CupertinoIcons.location_solid),
-                              const SizedBox(
-                                width: 12.0,
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    "From",
-                                    style: TextStyle(
-                                        color: Colors.black, fontSize: 12),
-                                  ),
-                                  Text(
-                                    Provider.of<AppInfo>(context)
-                                                .userPickUpLocation !=
-                                            null
-                                        ? (Provider.of<AppInfo>(context).userPickUpLocation!.locationName!)
-                                        : "your current address",
-                                    style: const TextStyle(
-                                        color: Colors.black, fontSize: 14),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        const SizedBox(height: 10.0),
-
-                        const Divider(
-                          height: 1,
-                          thickness: 1,
-                          color: Colors.grey,
-                        ),
-
-                        const SizedBox(height: 16.0),
-
-                        //to destination
-                        GestureDetector(
-                          onTap:() {
-                            Navigator.push(context, MaterialPageRoute(builder: (c)=> SearchPlaces()));
-                          },
-                          child: Row(
-                            children: [
-                              const Icon(CupertinoIcons.location_solid),
-                              const SizedBox(
-                                width: 12.0,
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    "To",
-                                    style: TextStyle(
-                                        color: Colors.black, fontSize: 12),
-                                  ),
-                                  Text(
-                                    Provider.of<AppInfo>(context).userDropOffLocation != null 
-                                      ? Provider.of<AppInfo>(context).userDropOffLocation!.locationName!
-                                      : "Where to go?",
-                                    style: const TextStyle(
-                                        color: Colors.black, fontSize: 14),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        const SizedBox(height: 10.0),
-
-                        const Divider(
-                          height: 1,
-                          thickness: 1,
-                          color: Colors.grey,
-                        ),
-
-                        const SizedBox(height: 16.0),
-
-                        ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                              primary: const Color.fromARGB(255, 146, 182, 244),
-                              textStyle: const TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold)),
-                          child: const Text(
-                            "Request a Ride",
-                          ),
-                        ),
-                      ],
+              child: FittedBox(
+                child: Container(
+                  width: 350,
+                  height: 200,
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(22),
+                      topRight: Radius.circular(22),
+                      bottomLeft: Radius.circular(22),
+                      bottomRight: Radius.circular(22),
                     ),
+                    gradient: LinearGradient(
+                        begin:
+                            Alignment(0.9797160029411316, 0.03849898651242256),
+                        end: Alignment(
+                            -0.03849898651242256, 0.04261964559555054),
+                        // ignore: prefer_const_literals_to_create_immutables
+                        colors: [
+                          Color.fromRGBO(0, 209, 255, 0.25999999046325684),
+                          Color.fromRGBO(117, 0, 173, 0.3499999940395355)
+                        ]),
                   ),
-                ]),
+                  child: Column(children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 18),
+                      child: Column(
+                        children: [
+                          //from origin
+                          GestureDetector(
+                            onTap: (() {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (c) => SearchPlaces2()));
+                            }),
+                            child: Row(
+                              children: [
+                                const Icon(CupertinoIcons.location_solid),
+                                const SizedBox(
+                                  width: 12.0,
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      "From",
+                                      style: TextStyle(
+                                          color: Colors.black, fontSize: 12),
+                                    ),
+                                    Text(
+                                      Provider.of<AppInfo>(context)
+                                                  .userPickUpLocation !=
+                                              null
+                                          ? (Provider.of<AppInfo>(context)
+                                              .userPickUpLocation!
+                                              .locationName!)
+                                          : "your current address",
+                                      style: const TextStyle(
+                                          color: Colors.black, fontSize: 14),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          const SizedBox(height: 10.0),
+
+                          const Divider(
+                            height: 1,
+                            thickness: 1,
+                            color: Colors.grey,
+                          ),
+
+                          const SizedBox(height: 16.0),
+
+                          //to destination
+                          DropdownButton(
+                              isExpanded: true,
+                              value: dropDownValue,
+                              items: [location1.name, location2.name]
+                                  .map((String value) {
+                                return DropdownMenuItem(
+                                  value: value,
+                                  child: Text(value).pOnly(left: 8, right: 8),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  dropDownValue = newValue!;
+                                });
+                              }),
+
+                          const Divider(
+                            height: 1,
+                            thickness: 1,
+                            color: Colors.grey,
+                          ),
+
+                          const SizedBox(height: 10.0),
+
+                          ElevatedButton(
+                            onPressed: () async {
+                              if (dropDownValue == null) {
+                                Fluttertoast.showToast(
+                                    msg: 'Please select a Location');
+                              } else {
+                                availableDrivers.clear();
+                                availableDrivers = await availableDriverFunc();
+                                
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                                primary:
+                                    const Color.fromARGB(255, 146, 182, 244),
+                                textStyle: const TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold)),
+                            child: const Text(
+                              "Request a Ride",
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ]),
+                ),
               ),
             ),
           ),
           Positioned(
-              top: 453,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              top: 433,
+              child: Column(
                 children: [
-                  HomeButton1(),
-                  const SizedBox(
-                    width: 22,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      HomeButton1(),
+                      const SizedBox(
+                        width: 22,
+                      ),
+                      HomeButton2(),
+                      const SizedBox(
+                        width: 22,
+                      ),
+                      HomeButton3(),
+                    ],
                   ),
-                  HomeButton2(),
-                  const SizedBox(
-                    width: 22,
-                  ),
-                  HomeButton3(),
+                  const SizedBox(height: 20),
+                  Container(
+                    height: 200,
+                    width: MediaQuery.of(context).size.width * 0.9,
+                    child: availableDrivers.isEmpty 
+                    ? _isLoading 
+                      ? const Center(child: CircularProgressIndicator()) 
+                      : const Center(child: Text('Search For Drivers')) 
+                    : ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: availableDrivers.length,
+                      itemBuilder: (context, index) {
+                          return Container(
+                            color: Colors.green,
+                            child: ListTile(
+                              title: Text(availableDrivers[index].toString()),
+                            ),
+                          );
+                      },
+                    ),
+                  )
                 ],
               )),
         ],
